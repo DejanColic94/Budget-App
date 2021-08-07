@@ -1,6 +1,27 @@
 // budet controller module -------------------------------------------------------------------------------------------------------------------------------------
 var model = (function() {
+    var Expense = function(id, description, value) {
+        this.id = id;
+        this.description = description;
+        this. value = value;
+    }
 
+    var Income = function(id, description, value) {
+        this.id = id;
+        this.description = description;
+        this. value = value;
+    }
+
+    var data = {
+        allItems: {
+            exp: [],
+            inc: []
+        },
+        totals: {
+            exp: 0,
+            inc: 0
+        }
+    }
 
 
 })();
@@ -68,11 +89,20 @@ var view = (function() {
 // App controller, connects model and view -------------------------------------------------------------------------------------------------------------------------------------------
 var controller = (function(model, view) {
 
-    var DOMstrings = view.getDOMstrings();
+    var setUpEventListeners = function() {
+        var DOMstrings = view.getDOMstrings();
+            document.querySelector(DOMstrings.inputBtn).addEventListener('click', controllAddItem);
+            document.addEventListener('keypress', function(event) {
+                if(event.code === 'Enter') {
+                controllAddItem();
+                }
+            });
+    }
+
     var controllAddItem = function() {
         // 1. Get input data
         var input = view.getInput();
-        console.log(input);
+        
         // 2. Add new item to the DS
 
         // 3. Display the data in the UI
@@ -83,15 +113,15 @@ var controller = (function(model, view) {
         
     }
 
-    document.querySelector(DOMstrings.inputBtn).addEventListener('click', controllAddItem);
+    
 
-    document.addEventListener('keypress', function(event) {
-        if(event.code === 'Enter') {
-            controllAddItem();
+
+    return {
+        init: function() {
+            setUpEventListeners();
         }
-    })
-
-
-
+    }
 
 })(model, view);
+
+controller.init();
