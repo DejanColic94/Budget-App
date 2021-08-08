@@ -73,7 +73,7 @@ var model = (function() {
 
         getBudget: function() {
             return {
-                budet: data.budget,
+                budget: data.budget,
                 income: data.totals.inc,
                 expenses: data.totals.exp,
                 percentage: data.percentage
@@ -115,7 +115,11 @@ var view = (function() {
         inputValue : '.add__value',
         inputBtn : '.add__btn',
         incomeContainer : '.income__list',
-        expensesContainer : '.expenses__list'
+        expensesContainer : '.expenses__list',
+        budgetLabel : '.budget__value',
+        incomeLabel : '.budget__income--value',
+        expensesLabel : '.budget__expenses--value',
+        percentageLabel : '.budget__expenses--percentage'
     }
 
     return {
@@ -162,6 +166,19 @@ var view = (function() {
 
             filedsArray[0].focus();
             
+        },
+
+        displayBudget: function(object) {
+            document.querySelector(DOMstrings.budgetLabel).textContent = '$'+object.budget;
+            document.querySelector(DOMstrings.incomeLabel).textContent = '$'+object.income;
+            document.querySelector(DOMstrings.expensesLabel).textContent = '$'+object.expenses;
+          
+
+            if(object.percentage > 0) {
+                document.querySelector(DOMstrings.percentageLabel).textContent = object.percentage + '%';
+            }else {
+                document.querySelector(DOMstrings.percentageLabel).textContent = "/";
+            }
         },
 
         getDOMstrings: function() {
@@ -213,7 +230,7 @@ var controller = (function(model, view) {
         // 2. return budget
         var budget = model.getBudget();
         // 3. update UI
-        console.log(budget);
+        view.displayBudget(budget);
     }
 
 
@@ -240,6 +257,12 @@ var controller = (function(model, view) {
 
     return {
         init: function() {
+            view.displayBudget({
+                budget: 0,
+                income: 0,
+                expenses: 0,
+                percentage: 0
+            });
             setUpEventListeners();
         }
     }
