@@ -12,6 +12,14 @@ var model = (function() {
         this. value = value;
     }
 
+    var calculateTotal = function(type) {
+        var sum = 0;
+        data.allItems[type].forEach(function(current) {
+            sum += current.value;
+        });
+        data.totals[type] = sum;
+    }
+
     var data = {
         allItems: {
             exp: [],
@@ -20,7 +28,9 @@ var model = (function() {
         totals: {
             exp: 0,
             inc: 0
-        }
+        },
+        budget: 0,
+        percentage: -1
     };
 
     return {
@@ -47,6 +57,32 @@ var model = (function() {
             // return new item so that other modules can use it
             return newItem;
         },
+
+        calculateBudget: function() {
+            calculateTotal('inc');
+            calculateTotal('exp');
+
+            data.budget = data.totals.inc - data.totals.exp;
+
+            if(data.totals.inc > 0) {
+            data.percentage =Math.round((data.totals.exp / data.totals.inc) * 100);
+            }else {
+                data.percentage = -1;
+            }
+        },
+
+        getBudget: function() {
+            return {
+                budet: data.budget,
+                income: data.totals.inc,
+                expenses: data.totals.exp,
+                percentage: data.percentage
+            }
+        },
+
+
+
+
         testing: function() {
             console.log(data);
         }
@@ -87,7 +123,7 @@ var view = (function() {
             return {
                 type: document.querySelector(DOMstrings.inputType).value, // returns inc or exp
                 description: document.querySelector(DOMstrings.inputDescription).value,
-                value : document.querySelector(DOMstrings.inputValue).value
+                value : parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };
         },
 
@@ -170,19 +206,33 @@ var controller = (function(model, view) {
             });
     }
 
+    var updateBudget = function() {
+
+        // 1. calculate budget
+        model.calculateBudget();
+        // 2. return budget
+        var budget = model.getBudget();
+        // 3. update UI
+        console.log(budget);
+    }
+
+
     var controllAddItem = function() {
         // 1. Get input data
         var input = view.getInput();
         
+        if(input.description !== "" && !isNaN(input.value) && input.value > 0) {
+
         // 2. Add new item to the DS
         var newItem = model.addItem(input.type, input.description, input.value);
         // 3. Display the data in the UI
         view.addListItem(newItem, input.type);
         view.clearInputFileds();
-        // 4. Calculate new total budget
+         
+        // 4. calculate and display budget
+        updateBudget();
 
-        // 5. Display total budget
-        
+        }
     }
 
     
