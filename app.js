@@ -114,6 +114,20 @@ var view = (function() {
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
 
+        clearInputFileds: function() {
+            var fields = document.querySelectorAll(DOMstrings.inputDescription +', '+ DOMstrings.inputValue); // returns a List
+
+            // Converting a List into an Array
+            var filedsArray = Array.prototype.slice.call(fields);
+
+            filedsArray.forEach(function(current, index, array) {
+                current.value = "";
+            });
+
+            filedsArray[0].focus();
+            
+        },
+
         getDOMstrings: function() {
             return DOMstrings;
         }
@@ -164,6 +178,7 @@ var controller = (function(model, view) {
         var newItem = model.addItem(input.type, input.description, input.value);
         // 3. Display the data in the UI
         view.addListItem(newItem, input.type);
+        view.clearInputFileds();
         // 4. Calculate new total budget
 
         // 5. Display total budget
