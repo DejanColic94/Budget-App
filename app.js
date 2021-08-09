@@ -196,6 +196,14 @@ var view = (function() {
         return sign + ' ' + integerPart + '.' + decimalPart;
     };
 
+    // function that loops through html elements - nodes
+    var nodeListForEach = function(list, callback) {
+        for( var i = 0; i < list.length; i++) {
+            callback(list[i],i);
+        }
+    };
+
+
     return {
         getInput: function() {
             return {
@@ -268,12 +276,7 @@ var view = (function() {
         displayPercentages: function(percentages) {
             var fields = document.querySelectorAll(DOMstrings.percentageItem);
 
-            // function that loops through html elements - nodes
-            var nodeListForEach = function(list, callback) {
-                for( var i = 0; i < list.length; i++) {
-                    callback(list[i],i);
-                }
-            };
+            
 
             
             nodeListForEach(fields,function(current, index) {
@@ -297,7 +300,21 @@ var view = (function() {
 
         },
 
-       
+       changedType: function() {
+            // .red and .red-focus classes in css
+            var fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' +
+                DOMstrings.inputDescription + ',' +
+                DOMstrings.inputValue
+            );
+
+                nodeListForEach(fields,function(current) {
+                    current.classList.toggle('red-focus');
+                });
+
+                document.querySelector(DOMstrings.inputBtn).classList.add('red');
+
+       },
 
         getDOMstrings: function() {
             return DOMstrings;
@@ -341,6 +358,7 @@ var controller = (function(model, view) {
             });
 
             document.querySelector(DOMstrings.listContainer).addEventListener('click', controllDeleteItem);
+            document.querySelector(DOMstrings.inputType).addEventListener('change' , view.changedType);
     }
 
     var updateBudget = function() {
