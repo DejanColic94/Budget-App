@@ -167,6 +167,34 @@ var view = (function() {
         percentageItem : '.item__percentage'
     }
 
+    var formatNumber = function(num, type) {
+
+        // RULES:
+        // 1. + or - before the number
+        // 2. 2 decimal points
+        // 3. comma (,) separating the thousands
+
+        num = Math.abs(num);
+        num = num.toFixed(2);
+
+        var numSplit = num.split('.');
+        var integerPart = numSplit[0];
+        var decimalPart = numSplit[1];
+
+        if(integerPart.length > 3) {
+            // works for all of the cases
+            // if 2345 -> 2,345
+            // if 345967 -> 345, 967
+            integerPart = integerPart.substr(0, integerPart.length - 3) + ',' + integerPart.substr( integerPart.length - 3, 3);
+        }
+
+        var sign;
+        type === 'exp' ? sign = '-' : sign = '+';
+
+        // putting it all together
+        return sign + ' ' + integerPart + '.' + decimalPart;
+    };
+
     return {
         getInput: function() {
             return {
@@ -191,7 +219,7 @@ var view = (function() {
             // replace placeholders with actual data
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value);
+            newHtml = newHtml.replace('%value%', formatNumber(obj.value,type));
 
 
 
@@ -219,9 +247,13 @@ var view = (function() {
         },
 
         displayBudget: function(object) {
-            document.querySelector(DOMstrings.budgetLabel).textContent = '$'+object.budget;
-            document.querySelector(DOMstrings.incomeLabel).textContent = '$'+object.income;
-            document.querySelector(DOMstrings.expensesLabel).textContent = '$'+object.expenses;
+            var type;
+
+            object.budget > 0? type = 'inc' : type = 'exp';
+
+            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(object.budget,type);
+            document.querySelector(DOMstrings.incomeLabel).textContent =formatNumber(object.income, 'inc');
+            document.querySelector(DOMstrings.expensesLabel).textContent =formatNumber(object.expenses, 'exp');
           
 
             if(object.percentage > 0) {
@@ -252,9 +284,12 @@ var view = (function() {
             });
         },
 
+
+       
+
         getDOMstrings: function() {
             return DOMstrings;
-        }
+        } 
     };
 
 
