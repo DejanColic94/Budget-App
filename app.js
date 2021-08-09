@@ -58,6 +58,21 @@ var model = (function() {
             return newItem;
         },
 
+        deleteItem: function(type,id) {
+            // creates new array consisting of ids of all items
+            var ids = data.allItems[type].map(function(current) {
+                return current.id;
+            });
+
+            // returns position of the item with the given id
+            var index = ids.indexOf(id);
+
+            // delete the item
+            if(index !== -1) {
+                data.allItems[type].splice(index, 1);
+            }
+        },
+
         calculateBudget: function() {
             calculateTotal('inc');
             calculateTotal('exp');
@@ -153,6 +168,11 @@ var view = (function() {
 
             // insert the html into the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+        },
+
+        deleteListItem: function(selectorID) {
+            var element = document.getElementById(selectorID);
+            element.parentNode.removeChild(element);
         },
 
         clearInputFileds: function() {
@@ -261,15 +281,16 @@ var controller = (function(model, view) {
         if( itemID) {
             var splitID = itemID.split('-');
             var type = splitID[0];
-            var ID = splitID[1];
+            var ID = parseInt(splitID[1]);
 
 
             // 1. delete item from data structure
-
+            model.deleteItem(type,ID);
             // 2. delete item from the UI
-
+            view.deleteListItem(itemID);
             // 3. update and show the new budget
-        }
+            updateBudget();
+        }   
     };
 
 
